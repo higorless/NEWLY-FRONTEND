@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import api from "../services/api.js";
-import jwt from "jsonwebtoken";
+import { api } from "../services/api.js";
 
 export const useAutenticate = create((set) => ({
   user: {},
@@ -11,8 +10,8 @@ export const useAutenticate = create((set) => ({
         method: post,
         url: "/login",
         data: {
-          phonenumber: JSON.stringfy(phonenumber),
-          password: JSON.stringfy(password),
+          phonenumber: phonenumber,
+          password: password,
         },
       });
 
@@ -20,20 +19,42 @@ export const useAutenticate = create((set) => ({
         throw new Error("Something went wrong calling sign up API");
       }
 
-      jwt.verify(response, "JWT_SECRET", (err, decoded) => {
-        if (err) {
-          console.log("Something Went Wrong with user autentication", err);
-        }
-        set({ user: { ...decoded } });
-      });
-
       localStorage.setItem("@nemly:user", JSON.stringify(user));
-      localStorage.setItem("@nemly:token", response);
+      localStorage.setItem("@nemly:token", response.token);
 
       api.defaults.headers.common["authorization"] = `bearer ${token}`;
 
       return { success: true, message: "User autenticated" };
-    } catch (err) {}
+    } catch (err) {
+      console.log(err.message);
+      return { success: false, message: "" };
+    }
+  },
+  userCreateAccount: async (phonenumber, password, username) => {
+    console.log(phonenumber, password, username);
+    try {
+      const response = await api({
+        method: "post",
+        url: "/user/register",
+        data: {
+          username: username,
+          phonenumber: phonenumber.toString(),
+          password: password,
+        },
+      });
+
+      if (!response) {
+        throw new Error("Somehting wentwrong calling the API");
+      }
+
+      return { sucess: true, message: "User registered" };
+    } catch (err) {
+      console.log(err);
+      return {
+        success: true,
+        message: "Something went wrong trying to create the user",
+      };
+    }
   },
   removeAllBears: () => set({ bears: 0 }),
   updateBears: (newBears) => set({ bears: newBears }),
