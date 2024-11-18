@@ -1,7 +1,10 @@
-import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { Home } from "../pages/Home";
 
 export const AppRoutes = () => {
-  return <div>olá, sou o teste para appRoutes</div>;
+  return (
+    <Routes>
+      <Route path={"/"} element={<Home />} />
+    </Routes>
+  );
 };
-
-export default AppRoutes;

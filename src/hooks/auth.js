@@ -7,7 +7,7 @@ export const useAutenticate = create((set) => ({
   userAutentication: async (phonenumber, password) => {
     try {
       const response = await api({
-        method: post,
+        method: "post",
         url: "/login",
         data: {
           phonenumber: phonenumber,
@@ -19,15 +19,22 @@ export const useAutenticate = create((set) => ({
         throw new Error("Something went wrong calling sign up API");
       }
 
-      localStorage.setItem("@nemly:user", JSON.stringify(user));
-      localStorage.setItem("@nemly:token", response.token);
+      localStorage.setItem("@nemly:user", JSON.stringify(response.data.user));
+      localStorage.setItem("@nemly:token", response.data.token);
 
-      api.defaults.headers.common["authorization"] = `bearer ${token}`;
+      api.defaults.headers.common[
+        "authorization"
+      ] = `bearer ${response.data.token}`;
+
+      set({ user: { ...response.data.user } });
 
       return { success: true, message: "User autenticated" };
     } catch (err) {
-      console.log(err.message);
-      return { success: false, message: "" };
+      console.log(err);
+      return {
+        success: false,
+        message: "Something wen wrong trying to Loggin",
+      };
     }
   },
   userCreateAccount: async (phonenumber, password, username) => {
