@@ -13,8 +13,20 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useChat } from "../../hooks/chat-service.js";
+import { useAutenticate } from "../../hooks/auth.js";
+import { useEffect } from "react";
+import { useUserSession } from "../../hooks/user-service.js";
 
 export function Home() {
+  const { chats, userChat } = useChat();
+  const { getFriendlist, friends } = useUserSession();
+
+  useEffect(() => {
+    getFriendlist();
+    console.log(friends);
+  }, []);
+
   return (
     <SidebarProvider
       style={{

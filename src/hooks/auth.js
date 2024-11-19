@@ -2,8 +2,11 @@ import { create } from "zustand";
 import { api } from "../services/api.js";
 
 export const useAutenticate = create((set) => ({
-  user: {},
-  setUser: (user) => set(user),
+  user: JSON.parse(localStorage.getItem("@nemly:user")) || {},
+  setUser: (user) => {
+    localStorage.setItem("@nemly:user", JSON.stringify(user));
+    set(user);
+  },
   userAutentication: async (phonenumber, password) => {
     try {
       const response = await api({
@@ -27,6 +30,8 @@ export const useAutenticate = create((set) => ({
       ] = `bearer ${response.data.token}`;
 
       set({ user: { ...response.data.user } });
+
+      console.log(api.defaults.headers.common["authorization"]);
 
       return { success: true, message: "User autenticated" };
     } catch (err) {
@@ -63,6 +68,9 @@ export const useAutenticate = create((set) => ({
       };
     }
   },
-  removeAllBears: () => set({ bears: 0 }),
-  updateBears: (newBears) => set({ bears: newBears }),
+  logout: () => {
+    localStorage.removeItem("@nemly:user");
+    localStorage.removeItem("@nemly:token");
+    set({ user: {} });
+  },
 }));
