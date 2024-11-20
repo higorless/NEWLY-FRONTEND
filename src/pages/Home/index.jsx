@@ -1,26 +1,28 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useChat } from "../../hooks/chat-service.js";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button.jsx";
+import { Formik } from "formik";
+import { Icons } from "../../components/Icons.jsx";
+import { useConversation } from "../../hooks/useConversation.js";
 import { useAutenticate } from "../../hooks/auth.js";
-import { useEffect } from "react";
-import { useUserSession } from "../../hooks/user-service.js";
+import { useRef, useEffect } from "react";
 
 export function Home() {
-  const { chats, userChat } = useChat();
-  const { getFriendlist, friends } = useUserSession();
+  const { selectedFriend, sendMessage, messages } = useConversation();
+  const { user } = useAutenticate();
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   return (
     <SidebarProvider
@@ -33,26 +35,89 @@ export function Home() {
         <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">All Inboxes</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Inbox</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          {selectedFriend && (
+            <h1 className="text-lg font-semibold">{selectedFriend.username}</h1>
+          )}
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {Array.from({ length: 24 }).map((_, index) => (
-            <div
-              key={index}
-              className="aspect-video h-12 w-full rounded-lg bg-muted/50"
-            />
-          ))}
+        <div className="flex flex-1 flex-col gap-4 p-4 overflow-y-auto">
+          {messages.length !== 0 ? (
+            messages.map((message, index) => (
+              <div
+                key={index}
+                className={`rounded-lg p-3 text-right ${
+                  message.messageSender === user._id // Verifica quem enviou a mensagem
+                    ? "text-base font-light bg-muted/80 self-end flex"
+                    : "text-base font-light bg-muted/50 self-start"
+                } break-all`}
+              >
+                {message.message}
+              </div>
+            ))
+          ) : (
+            <div>Mande uma mensagem amigo, não temos nenhuma ainda</div>
+          )}
+          <div
+            ref={messagesEndRef}
+            className="h-[4px] absolute bottom-0 bg-slate-600 z-100"
+          />
         </div>
+        <Formik
+          initialValues={{
+            message: "",
+          }}
+          onSubmit={async (values, { setSubmitting, resetForm }) => {
+            if (!selectedFriend) {
+              console.error("Nenhum amigo selecionado");
+              setSubmitting(false);
+              return;
+            }
+
+            try {
+              await sendMessage(selectedFriend._id, values.message);
+              resetForm();
+            } catch (error) {
+              console.error("Erro ao enviar mensagem:", error);
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        >
+          {({
+            values,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            isSubmitting,
+          }) => (
+            <form
+              onSubmit={handleSubmit}
+              className="sticky bottom-0 flex shrink-0 items-center gap-2 border-b bg-background p-4"
+            >
+              <Textarea
+                className="resize-none h-2 min-h-[42px] focus:outline-none focus:ring-0"
+                id="message"
+                type="string"
+                name="message"
+                placeholder="Digite sua mensagem aqui"
+                value={values.message}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={!selectedFriend}
+                required
+              />
+              <Button
+                disabled={!selectedFriend}
+                className="h-full"
+                type="submit"
+              >
+                {isSubmitting && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Enviar
+              </Button>
+            </form>
+          )}
+        </Formik>
       </SidebarInset>
     </SidebarProvider>
   );

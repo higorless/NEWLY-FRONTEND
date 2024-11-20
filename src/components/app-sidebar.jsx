@@ -20,16 +20,12 @@ import { Switch } from "@/components/ui/switch";
 import { useAutenticate } from "../hooks/auth.js";
 import { useUserSession } from "../hooks/user-service.js";
 import { useEffect, useState } from "react";
+import { useConversation } from "../hooks/useConversation.js";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
-      title: "Inbox",
+      title: "Friends",
       url: "#",
       icon: Inbox,
       isActive: true,
@@ -49,16 +45,21 @@ const data = {
 
 export function AppSidebar({ ...props }) {
   const [activeItem, setActiveItem] = useState(data.navMain[0]);
-  const [mails, setMails] = useState(data.mails);
   const { setOpen } = useSidebar();
-  const { logout } = useAutenticate();
+  const { logout, user } = useAutenticate();
 
   const { getFriendlist, friends } = useUserSession();
+  const { fetchMessages, setSelectedFriend } = useConversation();
 
   //Add an future socket option for auto fetch friend list when updated
   useEffect(() => {
     getFriendlist();
   }, []);
+
+  const handleUserSelectChat = (friend) => {
+    setSelectedFriend(friend);
+    fetchMessages(friend._id);
+  };
 
   return (
     <Sidebar
@@ -100,14 +101,6 @@ export function AppSidebar({ ...props }) {
                       }}
                       onClick={() => {
                         setActiveItem(item);
-                        logout();
-                        const mail = data.mails.sort(() => Math.random() - 0.5);
-                        setMails(
-                          mail.slice(
-                            0,
-                            Math.max(5, Math.floor(Math.random() * 10) + 1)
-                          )
-                        );
                         setOpen(true);
                       }}
                       isActive={activeItem.title === item.title}
@@ -123,21 +116,15 @@ export function AppSidebar({ ...props }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={data.user} />
+          <NavUser user={user} logout={logout} />
         </SidebarFooter>
       </Sidebar>
-      {/* This is the second sidebar */}
-      {/* We disable collapsible and let it fill remaining space */}
       <Sidebar collapsible="none" className="hidden flex-1 md:flex">
         <SidebarHeader className="gap-3.5 border-b p-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-base font-medium text-foreground">
               {activeItem.title}
             </div>
-            <Label className="flex items-center gap-2 text-sm">
-              <span>Unreads</span>
-              <Switch className="shadow-none" />
-            </Label>
           </div>
           <SidebarInput placeholder="Type to search..." />
         </SidebarHeader>
@@ -149,13 +136,14 @@ export function AppSidebar({ ...props }) {
                   href="#"
                   key={friend?._id}
                   className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleUserSelectChat(friend);
+                  }}
                 >
                   <div className="flex w-full items-center gap-2">
-                    <span>{friend?.username}</span>{" "}
+                    <span>{friend?.username}</span>
                   </div>
-                  {/* <span className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
-                    {mail.teaser}
-                  </span> */}
                 </a>
               ))}
             </SidebarGroupContent>
