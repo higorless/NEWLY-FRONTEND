@@ -1,12 +1,15 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { useAutenticate } from "../hooks/auth.js";
 import io from "socket.io-client";
+
+export const useSocketContext = () => {
+  return useContext(SocketContext);
+};
 
 export const SocketContext = createContext();
 
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const [onlineUsers, setOnlineUsers] = useState([]);
   const { user } = useAutenticate();
 
   useEffect(() => {
@@ -19,6 +22,11 @@ export const SocketContextProvider = ({ children }) => {
 
       setSocket(socket);
 
+      socket.on("friendAdded", ({ friendId }) => {
+        console.log(`New friend added: ${friendId}`);
+        getFriendlist();
+      });
+
       return () => socket.close();
     } else {
       if (socket) {
@@ -26,10 +34,10 @@ export const SocketContextProvider = ({ children }) => {
         setSocket(null);
       }
     }
-  }, []);
+  }, [user]);
 
   return (
-    <SocketContext.Provider value={{ socket, onlineUsers }}>
+    <SocketContext.Provider value={{ socket }}>
       {children}
     </SocketContext.Provider>
   );

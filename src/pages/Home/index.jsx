@@ -12,10 +12,13 @@ import { Icons } from "../../components/Icons.jsx";
 import { useConversation } from "../../hooks/useConversation.js";
 import { useAutenticate } from "../../hooks/auth.js";
 import { useRef, useEffect } from "react";
+import { useListenMessages } from "../../hooks/useListenMessages";
+import { MessageCircle } from "lucide-react";
 
 export function Home() {
   const { selectedFriend, sendMessage, messages } = useConversation();
   const { user } = useAutenticate();
+  useListenMessages();
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -45,16 +48,23 @@ export function Home() {
               <div
                 key={index}
                 className={`rounded-lg p-3 text-right ${
-                  message.messageSender === user._id // Verifica quem enviou a mensagem
+                  message.messageSender === user._id
                     ? "text-base font-light bg-muted/80 self-end flex"
-                    : "text-base font-light bg-muted/50 self-start"
+                    : "text-gray-50 font-light bg-zinc-400 self-start"
                 } break-all`}
               >
                 {message.message}
               </div>
             ))
           ) : (
-            <div>Mande uma mensagem amigo, não temos nenhuma ainda</div>
+            <div className="flex w-full h-full justify-center items-center">
+              <div className="flex flex-col items-center gap-1">
+                <MessageCircle className="text-zinc-400" />
+                <strong className="text-zinc-400 font-light">
+                  Selecinoe um Chat ou envie uma mensagem
+                </strong>
+              </div>
+            </div>
           )}
           <div
             ref={messagesEndRef}

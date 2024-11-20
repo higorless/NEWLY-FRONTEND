@@ -1,5 +1,13 @@
 import * as React from "react";
-import { ArchiveX, Command, File, Inbox, Send, Trash2 } from "lucide-react";
+import {
+  ArchiveX,
+  Command,
+  File,
+  Inbox,
+  Send,
+  Trash2,
+  Contact,
+} from "lucide-react";
 
 import { NavUser } from "@/components/nav-user";
 import { Label } from "@/components/ui/label";
@@ -25,9 +33,9 @@ import { useConversation } from "../hooks/useConversation.js";
 const data = {
   navMain: [
     {
-      title: "Friends",
+      title: "Amigos",
       url: "#",
-      icon: Inbox,
+      icon: Contact,
       isActive: true,
     },
   ],
@@ -47,9 +55,16 @@ export function AppSidebar({ ...props }) {
   const [activeItem, setActiveItem] = useState(data.navMain[0]);
   const { setOpen } = useSidebar();
   const { logout, user } = useAutenticate();
+  const [searchItem, setSearchItem] = useState(null);
 
   const { getFriendlist, friends } = useUserSession();
   const { fetchMessages, setSelectedFriend } = useConversation();
+
+  const filteredFriends = searchItem
+    ? friends?.filter((friend) =>
+        friend?.username?.toLowerCase().includes(searchItem?.toLowerCase())
+      )
+    : friends;
 
   //Add an future socket option for auto fetch friend list when updated
   useEffect(() => {
@@ -126,12 +141,17 @@ export function AppSidebar({ ...props }) {
               {activeItem.title}
             </div>
           </div>
-          <SidebarInput placeholder="Type to search..." />
+          <SidebarInput
+            onChange={(e) => {
+              setSearchItem(e.target.value);
+            }}
+            placeholder="Digite e pesquise..."
+          />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {friends.map((friend) => (
+              {filteredFriends.map((friend) => (
                 <a
                   href="#"
                   key={friend?._id}
@@ -141,8 +161,13 @@ export function AppSidebar({ ...props }) {
                     handleUserSelectChat(friend);
                   }}
                 >
-                  <div className="flex w-full items-center gap-2">
-                    <span>{friend?.username}</span>
+                  <div className="flex w-full flex-wrap gap-2 flex-col items-start">
+                    <span className="text-sm font-medium">
+                      {friend?.username}
+                    </span>
+                    <p className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
+                      {friend?.bio}
+                    </p>
                   </div>
                 </a>
               ))}
