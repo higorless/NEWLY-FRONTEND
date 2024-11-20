@@ -25,13 +25,7 @@ export const useAutenticate = create((set) => ({
       localStorage.setItem("@nemly:user", JSON.stringify(response.data.user));
       localStorage.setItem("@nemly:token", response.data.token);
 
-      api.defaults.headers.common[
-        "authorization"
-      ] = `bearer ${response.data.token}`;
-
       set({ user: { ...response.data.user } });
-
-      console.log(api.defaults.headers.common["authorization"]);
 
       return { success: true, message: "User autenticated" };
     } catch (err) {

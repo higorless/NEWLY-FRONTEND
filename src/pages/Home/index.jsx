@@ -22,11 +22,6 @@ export function Home() {
   const { chats, userChat } = useChat();
   const { getFriendlist, friends } = useUserSession();
 
-  useEffect(() => {
-    getFriendlist();
-    console.log(friends);
-  }, []);
-
   return (
     <SidebarProvider
       style={{
