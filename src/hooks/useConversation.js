@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { api } from "../services/api.js";
+import { format } from "date-fns";
 
 export const useConversation = create((set) => ({
   selectedFriend: null,
@@ -21,9 +22,24 @@ export const useConversation = create((set) => ({
         url: `/getmessages/${receiverId}`,
       });
 
+      const dateFormatedMessages = response.data.data.map((message) => {
+        const messageDateFormated = format(
+          new Date(message.createdAt),
+          "HH:mm"
+        );
+
+        return {
+          _id: message._id,
+          messageSender: message.messageSender,
+          messageReceiver: message.messageReceiver,
+          message: message.message,
+          sentTime: messageDateFormated,
+        };
+      });
+
       set({
         chatId: response.data.chatId,
-        messages: response.data.data,
+        messages: dateFormatedMessages,
       });
     } catch (error) {
       console.error("Erro ao buscar mensagens do chat:", error);
@@ -38,6 +54,8 @@ export const useConversation = create((set) => ({
     try {
       const token = localStorage.getItem("@nemly:token");
       const user = localStorage.getItem("@nemly:user");
+
+      const clientDate = format(Date.now(), "HH:mm");
 
       const newMessage = {
         messageSender: JSON.parse(user)._id,
@@ -54,12 +72,17 @@ export const useConversation = create((set) => ({
         data: newMessage,
       });
 
+      const clientSideMessage = {
+        ...newMessage,
+        clientSendTime: clientDate,
+      };
+
       if (!response) {
         throw new Error("Something went wrong sending a message");
       }
 
       set((state) => ({
-        messages: [...state.messages, newMessage],
+        messages: [...state.messages, clientSideMessage],
       }));
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);

@@ -7,6 +7,7 @@ import {
   Send,
   Trash2,
   Contact,
+  UserRoundPlus,
 } from "lucide-react";
 
 import { NavUser } from "@/components/nav-user";
@@ -29,6 +30,7 @@ import { useAutenticate } from "../hooks/auth.js";
 import { useUserSession } from "../hooks/user-service.js";
 import { useEffect, useState } from "react";
 import { useConversation } from "../hooks/useConversation.js";
+import { useListenFriendAdded } from "../hooks/useListenFriendAdded.js";
 
 const data = {
   navMain: [
@@ -38,15 +40,11 @@ const data = {
       icon: Contact,
       isActive: true,
     },
-  ],
-  mails: [
     {
-      name: "William Smith",
-      email: "williamsmith@example.com",
-      subject: "Meeting Tomorrow",
-      date: "09:34 AM",
-      teaser:
-        "Hi team, just a reminder about our meeting tomorrow at 10 AM.\nPlease come prepared with your project updates.",
+      title: "Add",
+      url: "#",
+      icon: UserRoundPlus,
+      isActive: false,
     },
   ],
 };
@@ -59,6 +57,7 @@ export function AppSidebar({ ...props }) {
 
   const { getFriendlist, friends } = useUserSession();
   const { fetchMessages, setSelectedFriend } = useConversation();
+  useListenFriendAdded();
 
   const filteredFriends = searchItem
     ? friends?.filter((friend) =>
@@ -66,7 +65,6 @@ export function AppSidebar({ ...props }) {
       )
     : friends;
 
-  //Add an future socket option for auto fetch friend list when updated
   useEffect(() => {
     getFriendlist();
   }, []);
@@ -107,25 +105,42 @@ export function AppSidebar({ ...props }) {
           <SidebarGroup>
             <SidebarGroupContent className="px-1.5 md:px-0">
               <SidebarMenu>
-                {data.navMain.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      tooltip={{
-                        children: item.title,
-                        hidden: false,
-                      }}
-                      onClick={() => {
-                        setActiveItem(item);
-                        setOpen(true);
-                      }}
-                      isActive={activeItem.title === item.title}
-                      className="px-2.5 md:px-2"
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {data.navMain.map((item) =>
+                  item.title !== "Add" ? (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        tooltip={{
+                          children: item.title,
+                          hidden: false,
+                        }}
+                        onClick={() => {
+                          setActiveItem(item);
+                          setOpen(true);
+                        }}
+                        isActive={activeItem.title === item.title}
+                        className="px-2.5 md:px-2"
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        tooltip={{
+                          children: item.title,
+                          hidden: false,
+                        }}
+                        onClick={() => {}}
+                        isActive={activeItem.title === item.title}
+                        className="px-2.5 md:px-2"
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

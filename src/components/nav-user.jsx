@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, User } from "lucide-react";
+import { ChevronsUpDown, LogOut, User, SquarePen } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { EditProfileModal } from "../components/EditProfileModal";
 
 export function NavUser({ user, logout }) {
   const { isMobile } = useSidebar();
@@ -75,6 +76,12 @@ export function NavUser({ user, logout }) {
               <LogOut />
               Log out
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <EditProfileModal
+              caption="Digite suas informações para alterar os dados"
+              title="Edite sua conta!"
+              childTitle="Editar meu perfil"
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

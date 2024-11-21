@@ -14,8 +14,10 @@ import { useAutenticate } from "../../hooks/auth.js";
 import { useRef, useEffect } from "react";
 import { useListenMessages } from "../../hooks/useListenMessages";
 import { MessageCircle } from "lucide-react";
+import { useState } from "react";
 
 export function Home() {
+  const [conversationMessages, setConversationMessages] = useState([]);
   const { selectedFriend, sendMessage, messages } = useConversation();
   const { user } = useAutenticate();
   useListenMessages();
@@ -26,6 +28,16 @@ export function Home() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    messages.map((message) => {
+      if (Object.values(message).includes(selectedFriend._id)) {
+        return setConversationMessages((state) => [...state, message]);
+      }
+    });
+
+    return () => setConversationMessages([]);
+  }, [messages, selectedFriend]);
 
   return (
     <SidebarProvider
@@ -44,16 +56,26 @@ export function Home() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 overflow-y-auto">
           {messages.length !== 0 ? (
-            messages.map((message, index) => (
-              <div
-                key={index}
-                className={`rounded-lg p-3 text-right ${
-                  message.messageSender === user._id
-                    ? "text-base font-light bg-muted/80 self-end flex"
-                    : "text-gray-50 font-light bg-zinc-400 self-start"
-                } break-all`}
-              >
-                {message.message}
+            conversationMessages.map((message, index) => (
+              <div key={index} className="flex flex-col gap-2 justify-end">
+                <div
+                  className={`rounded-lg p-3 text-right ${
+                    message.messageSender === user._id
+                      ? "text-base font-light bg-muted/80 self-end flex"
+                      : "text-gray-50 font-light bg-zinc-400 self-start"
+                  } break-all`}
+                >
+                  <span>{message.message}</span>
+                </div>
+                <span
+                  className={`text-xs text-muted-foreground ${
+                    message.messageSender === user._id
+                      ? "self-end"
+                      : "self-start"
+                  }`}
+                >
+                  {message.sentTime ?? message.clientSendTime}
+                </span>
               </div>
             ))
           ) : (
@@ -68,7 +90,7 @@ export function Home() {
           )}
           <div
             ref={messagesEndRef}
-            className="h-[4px] absolute bottom-0 bg-slate-600 z-100"
+            className="h-[4px] absolute bottom-0 z-100"
           />
         </div>
         <Formik
