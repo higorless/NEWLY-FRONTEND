@@ -36,8 +36,7 @@ export const useAutenticate = create((set) => ({
       };
     }
   },
-  userCreateAccount: async (phonenumber, password, username) => {
-    console.log(phonenumber, password, username);
+  userCreateAccount: async (phonenumber, password, username, bio) => {
     try {
       const response = await api({
         method: "post",
@@ -46,6 +45,7 @@ export const useAutenticate = create((set) => ({
           username: username,
           phonenumber: phonenumber.toString(),
           password: password,
+          bio: bio,
         },
       });
 

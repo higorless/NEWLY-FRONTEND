@@ -2,9 +2,11 @@ import { Icons } from "../Icons";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 import { Formik } from "formik";
 import { createAccountSchema } from "./validateSchema.js";
 import { useAutenticate } from "../../hooks/auth.js";
+import InputMask from "react-input-mask";
 
 export const UserCreateAccountModal = ({
   getUserRegistrationStatus,
@@ -23,6 +25,7 @@ export const UserCreateAccountModal = ({
           username: "",
           phonenumber: "",
           password: "",
+          bio: "",
         }}
         validationSchema={createAccountSchema}
         onSubmit={(values, { setSubmitting }) => {
@@ -30,7 +33,8 @@ export const UserCreateAccountModal = ({
             userCreateAccount(
               values.phonenumber,
               values.password,
-              values.username
+              values.username,
+              values.bio
             );
             handleUserRegistrationStatus(true);
             setSubmitting(false);
@@ -45,6 +49,7 @@ export const UserCreateAccountModal = ({
           handleBlur,
           handleSubmit,
           isSubmitting,
+          setFieldValue,
         }) => (
           <form onSubmit={handleSubmit}>
             <div className="grid gap-2">
@@ -71,16 +76,23 @@ export const UserCreateAccountModal = ({
                 <Label className="sr-only" htmlFor="phonenumber">
                   Número de Telefone
                 </Label>
-                <Input
-                  id="phonenumber"
-                  type="number"
-                  name="phonenumber"
-                  placeholder="0000-0000"
+                <InputMask
+                  mask="(99) 99999-9999"
                   value={values.phonenumber}
-                  onChange={handleChange}
+                  onChange={(e) => setFieldValue("phonenumber", e.target.value)}
                   onBlur={handleBlur}
                   disabled={isSubmitting}
-                />
+                >
+                  {(inputProps) => (
+                    <Input
+                      {...inputProps}
+                      id="phonenumber"
+                      type="text"
+                      name="phonenumber"
+                      placeholder="(00) 00000-0000"
+                    />
+                  )}
+                </InputMask>
                 <span className="text-xs text-muted-foreground">
                   {errors.phonenumber &&
                     touched.phonenumber &&
@@ -104,6 +116,23 @@ export const UserCreateAccountModal = ({
                 />
                 <span className="text-xs text-muted-foreground">
                   {errors.password && touched.password && errors.password}
+                </span>
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor="bio" className="text-sm">
+                  Bio
+                </Label>
+                <Textarea
+                  id="bio"
+                  name="bio"
+                  placeholder="Fale sobre você..."
+                  value={values.bio}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={isSubmitting}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {errors.bio && touched.bio && errors.bio}
                 </span>
               </div>
               <Button disabled={isSubmitting} type="submit">

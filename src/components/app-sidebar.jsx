@@ -25,12 +25,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Switch } from "@/components/ui/switch";
 import { useAutenticate } from "../hooks/auth.js";
 import { useUserSession } from "../hooks/user-service.js";
 import { useEffect, useState } from "react";
 import { useConversation } from "../hooks/useConversation.js";
-import { useListenFriendAdded } from "../hooks/useListenFriendAdded.js";
+import { AddFriendModal } from "../components/AddFriendModal";
 
 const data = {
   navMain: [
@@ -51,23 +50,27 @@ const data = {
 
 export function AppSidebar({ ...props }) {
   const [activeItem, setActiveItem] = useState(data.navMain[0]);
+  const [searchItem, setSearchItem] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { setOpen } = useSidebar();
   const { logout, user } = useAutenticate();
-  const [searchItem, setSearchItem] = useState(null);
-
   const { getFriendlist, friends } = useUserSession();
   const { fetchMessages, setSelectedFriend } = useConversation();
-  useListenFriendAdded();
 
   const filteredFriends = searchItem
     ? friends?.filter((friend) =>
         friend?.username?.toLowerCase().includes(searchItem?.toLowerCase())
       )
-    : friends;
+    : friends || [];
 
   useEffect(() => {
     getFriendlist();
   }, []);
+
+  const handleChildDialogOpen = (state) => {
+    setIsDialogOpen(state);
+  };
 
   const handleUserSelectChat = (friend) => {
     setSelectedFriend(friend);
@@ -87,7 +90,12 @@ export function AppSidebar({ ...props }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
+              <SidebarMenuButton
+                size="lg"
+                asChild
+                className="md:h-8 md:p-0"
+                onClick={() => setIsDialogOpen(true)}
+              >
                 <a href="#">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                     <Command className="size-4" />
@@ -106,17 +114,14 @@ export function AppSidebar({ ...props }) {
             <SidebarGroupContent className="px-1.5 md:px-0">
               <SidebarMenu>
                 {data.navMain.map((item) =>
-                  item.title !== "Add" ? (
+                  item.title === "Add" ? (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         tooltip={{
                           children: item.title,
                           hidden: false,
                         }}
-                        onClick={() => {
-                          setActiveItem(item);
-                          setOpen(true);
-                        }}
+                        onClick={() => setIsDialogOpen(true)}
                         isActive={activeItem.title === item.title}
                         className="px-2.5 md:px-2"
                       >
@@ -141,6 +146,12 @@ export function AppSidebar({ ...props }) {
                     </SidebarMenuItem>
                   )
                 )}
+                <AddFriendModal
+                  isDialogOpen={isDialogOpen}
+                  handleUserDialog={handleChildDialogOpen}
+                  title="Adicione seu amigo"
+                  caption="Digite o número de telefone para adicionar o seu amigo"
+                />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -157,35 +168,37 @@ export function AppSidebar({ ...props }) {
             </div>
           </div>
           <SidebarInput
-            onChange={(e) => {
-              setSearchItem(e.target.value);
-            }}
+            onChange={(e) => setSearchItem(e.target.value)}
             placeholder="Digite e pesquise..."
           />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {filteredFriends.map((friend) => (
-                <a
-                  href="#"
-                  key={friend?._id}
-                  className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleUserSelectChat(friend);
-                  }}
-                >
-                  <div className="flex w-full flex-wrap gap-2 flex-col items-start">
-                    <span className="text-sm font-medium">
-                      {friend?.username}
-                    </span>
-                    <p className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
-                      {friend?.bio}
-                    </p>
-                  </div>
-                </a>
-              ))}
+              {Array.isArray(filteredFriends) && filteredFriends.length > 0 ? (
+                filteredFriends.map((friend) => (
+                  <a
+                    href="#"
+                    key={friend?._id}
+                    className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleUserSelectChat(friend);
+                    }}
+                  >
+                    <div className="flex w-full flex-wrap gap-2 flex-col items-start">
+                      <span className="text-sm font-medium">
+                        {friend?.username}
+                      </span>
+                      <p className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
+                        {friend?.bio}
+                      </p>
+                    </div>
+                  </a>
+                ))
+              ) : (
+                <p>Algum erro ocorroreu no seu socket de amigos</p>
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>

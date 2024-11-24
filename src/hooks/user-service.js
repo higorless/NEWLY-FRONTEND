@@ -3,6 +3,7 @@ import { api } from "../services/api.js";
 
 export const useUserSession = create((set) => ({
   friends: [],
+  setFriends: (friends) => set({ friends }),
   getFriendlist: async () => {
     try {
       const token = localStorage.getItem("@nemly:token");
@@ -20,7 +21,7 @@ export const useUserSession = create((set) => ({
       });
 
       set({
-        friends: [...response.data],
+        friends: response.data || [],
       });
 
       return { success: true, message: "Todos os amigos buscados" };
@@ -82,7 +83,34 @@ export const useUserSession = create((set) => ({
       return { success: true, message: "Perfil atualizado com sucesso" };
     } catch (err) {
       console.error("Erro:", err);
-      return { success: false, message: "Erro ao tentar atualizar o perfil" };
+      return { success: false, message: "Error trying to update user profile" };
+    }
+  },
+  addFriend: async (phonenumber) => {
+    try {
+      const token = localStorage.getItem("@nemly:token");
+
+      if (!token) {
+        throw new Error("Token ausente no localStorage");
+      }
+
+      const response = await api({
+        method: "post",
+        url: "/user/add",
+        data: {
+          phonenumber: phonenumber,
+        },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response) throw new Error("Erro ao tentar atulizar meu usuário");
+
+      return { success: true, message: "Amigo adicionado com sucesso" };
+    } catch (err) {
+      console.error("Error trying to add an friend:", err);
+      return { success: false, message: "Algo de errado ao adicionar o amigo" };
     }
   },
 }));

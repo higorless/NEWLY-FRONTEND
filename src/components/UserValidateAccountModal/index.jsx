@@ -5,6 +5,7 @@ import { Label } from "../ui/label";
 import { Formik } from "formik";
 import { validateAccountSchema } from "./validateSchema.js";
 import { useAutenticate } from "../../hooks/auth.js";
+import InputMask from "react-input-mask";
 
 export const UserValidateAccountModal = ({ ...props }) => {
   const { userAutentication } = useAutenticate();
@@ -32,6 +33,7 @@ export const UserValidateAccountModal = ({ ...props }) => {
           handleBlur,
           handleSubmit,
           isSubmitting,
+          setFieldValue, // Adicionado aqui para corrigir o problema do InputMask
         }) => (
           <form onSubmit={handleSubmit}>
             <div className="grid gap-2">
@@ -39,22 +41,30 @@ export const UserValidateAccountModal = ({ ...props }) => {
                 <Label className="sr-only" htmlFor="phonenumber">
                   Número de Telefone
                 </Label>
-                <Input
-                  id="phonenumber"
-                  type="number"
-                  name="phonenumber"
-                  placeholder="0000-0000"
+                <InputMask
+                  mask="(99) 99999-9999"
                   value={values.phonenumber}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                  onChange={(e) => setFieldValue("phonenumber", e.target.value)}
+                  onBlur={(e) => handleBlur(e)}
                   disabled={isSubmitting}
-                />
+                >
+                  {(inputProps) => (
+                    <Input
+                      {...inputProps}
+                      id="phonenumber"
+                      name="phonenumber"
+                      placeholder="(00) 00000-0000"
+                      autoCapitalize="none"
+                    />
+                  )}
+                </InputMask>
                 <span className="text-xs text-muted-foreground">
                   {errors.phonenumber &&
                     touched.phonenumber &&
                     errors.phonenumber}
                 </span>
               </div>
+
               <div className="grid gap-1">
                 <Label className="sr-only" htmlFor="password">
                   Sua Senha
@@ -74,6 +84,7 @@ export const UserValidateAccountModal = ({ ...props }) => {
                   {errors.password && touched.password && errors.password}
                 </span>
               </div>
+
               <Button disabled={isSubmitting} type="submit">
                 {isSubmitting && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

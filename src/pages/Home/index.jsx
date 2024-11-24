@@ -18,6 +18,7 @@ import { useState } from "react";
 
 export function Home() {
   const [conversationMessages, setConversationMessages] = useState([]);
+  const [showAnimate, setShowAnimate] = useState(false);
   const { selectedFriend, sendMessage, messages } = useConversation();
   const { user } = useAutenticate();
   useListenMessages();
@@ -105,6 +106,7 @@ export function Home() {
             }
 
             try {
+              setShowAnimate(true);
               await sendMessage(selectedFriend._id, values.message);
               resetForm();
             } catch (error) {

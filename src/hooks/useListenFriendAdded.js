@@ -4,11 +4,13 @@ import { useUserSession } from "../hooks/user-service.js";
 
 export const useListenFriendAdded = () => {
   const { socket } = useSocketContext();
-  const { friends, setFriends } = useUserSession();
+  const { friends, setFriends, getFriendlist } = useUserSession();
 
   useEffect(() => {
     socket?.on("friendAdded", (newFriend) => {
-      setFriends((prevFriends) => [...prevFriends, newFriend]);
+      console.log(newFriend);
+      setFriends([...friends, newFriend]);
+      getFriendlist();
     });
 
     return () => socket?.off("friendAdded");

@@ -22,11 +22,6 @@ export const SocketContextProvider = ({ children }) => {
 
       setSocket(socket);
 
-      socket.on("friendAdded", ({ friendId }) => {
-        console.log(`New friend added: ${friendId}`);
-        getFriendlist();
-      });
-
       return () => socket.close();
     } else {
       if (socket) {

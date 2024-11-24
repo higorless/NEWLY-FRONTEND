@@ -14,6 +14,7 @@ import { Formik } from "formik";
 import { DropdownMenuItem, DropdownMenu } from "./ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { SquarePen } from "lucide-react";
+import InputMask from "react-input-mask";
 
 import { useUserSession } from "../hooks/user-service";
 import { useAutenticate } from "../hooks/auth.js";
@@ -51,7 +52,7 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
         {profiledUpdated ? (
           <DialogContent className="sm:max-w-[425px] px-4" autoFocus={false}>
             <DialogHeader className="flex items-center justify-center px-10 py-10">
-              <DialogTitle>Seu perfil foi atalizado!</DialogTitle>
+              <DialogTitle>Seu perfil foi atualizado!</DialogTitle>
               <DialogDescription>Clique no X acima</DialogDescription>
             </DialogHeader>
           </DialogContent>
@@ -94,7 +95,7 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                 } catch (err) {
                   console.log(err);
                 } finally {
-                  setSubmitting(true);
+                  setSubmitting(false);
                 }
               }}
             >
@@ -104,6 +105,7 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                 handleBlur,
                 handleSubmit,
                 isSubmitting,
+                setFieldValue,
               }) => (
                 <form
                   onSubmit={handleSubmit}
@@ -125,21 +127,32 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
+                    <Label htmlFor="phonenumber" className="text-right">
                       Telefone
                     </Label>
-                    <Input
-                      id="phonenumber"
-                      name="phonenumber"
-                      type="string"
+                    <InputMask
+                      mask="(99) 99999-9999"
                       value={values.phonenumber}
-                      onChange={handleChange}
+                      onChange={(e) =>
+                        setFieldValue("phonenumber", e.target.value)
+                      }
                       onBlur={handleBlur}
-                      className="col-span-3"
-                    />
+                      disabled={isSubmitting}
+                    >
+                      {(inputProps) => (
+                        <Input
+                          {...inputProps}
+                          id="phonenumber"
+                          name="phonenumber"
+                          type="text"
+                          placeholder="(00) 00000-0000"
+                          className="col-span-3"
+                        />
+                      )}
+                    </InputMask>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
+                    <Label htmlFor="password" className="text-right">
                       Senha
                     </Label>
                     <Input
@@ -153,13 +166,13 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
+                    <Label htmlFor="bio" className="text-right">
                       Descrição
                     </Label>
                     <Input
                       id="bio"
                       name="bio"
-                      type="string"
+                      type="text"
                       value={values.bio}
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -167,13 +180,13 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
+                    <Label htmlFor="avatar" className="text-right">
                       Foto Perfil
                     </Label>
                     <Input
                       id="avatar"
                       name="avatar"
-                      type="string"
+                      type="text"
                       value={values.avatar}
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -186,7 +199,7 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                       type="submit"
                       form="updatingProfileForm"
                     >
-                      salvar alterações
+                      Salvar alterações
                     </Button>
                   </DialogFooter>
                 </form>
