@@ -10,19 +10,24 @@ export const SocketContext = createContext();
 
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
+  const [teste, setTest] = useState(null);
   const { user } = useAutenticate();
 
   useEffect(() => {
-    if (user) {
-      const socket = io(import.meta.env.VITE_SOCKET_BACKEND_URL, {
-        query: {
-          userId: user._id,
-        },
-      });
+    if (Object.keys(user).length !== 0) {
+      try {
+        const socket = io(import.meta.env.VITE_SOCKET_BACKEND_URL, {
+          query: {
+            userId: user._id,
+          },
+        });
 
-      setSocket(socket);
-
-      return () => socket.close();
+        setSocket(socket);
+        return () => socket.close();
+      } catch (err) {
+        console.log("err socket", err);
+        return () => setSocket(null);
+      }
     } else {
       if (socket) {
         socket.close();
