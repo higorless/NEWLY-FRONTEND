@@ -49,13 +49,13 @@ export const useAutenticate = create((set) => ({
         },
       });
 
-      if (!response) {
-        throw new Error("Somehting wentwrong calling the API");
+      if (response?.status) {
+        return { success: true, message: "User registered" };
+      } else {
+        throw new Error("Unexpected API response");
       }
-
-      return { sucess: true, message: "User registered" };
     } catch (err) {
-      console.log(err);
+      console.error("Error in userCreateAccount:", err);
       return {
         success: false,
         message:

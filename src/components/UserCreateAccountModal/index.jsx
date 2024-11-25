@@ -48,6 +48,9 @@ export const UserCreateAccountModal = ({
               values.bio
             );
 
+            console.log(success);
+            console.log(message);
+
             if (!success) {
               toast({
                 title: "Erro ao criar conta",
@@ -55,11 +58,11 @@ export const UserCreateAccountModal = ({
                 status: "error",
               });
               return setSubmitting(false);
+            } else {
+              handleUserRegistrationStatus(true);
+              resetForm();
+              setSubmitting(false);
             }
-
-            handleUserRegistrationStatus(true);
-            resetForm();
-            setSubmitting(false);
           }}
         >
           {({
