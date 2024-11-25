@@ -12,7 +12,7 @@ export const RegisterPage = () => {
   return (
     <>
       {isUserRegistered ? (
-        <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <div className="container relative flex w-full h-screen flex-col max-w-none items-center justify-center md:grid md: lg:max-w-none lg:grid-cols-2 lg:px-0">
           <NavLink
             to="/"
             className="absolute right-4 top-4 md:right-8 md:top-8"
@@ -39,8 +39,9 @@ export const RegisterPage = () => {
             <div className="relative z-20 mt-auto">
               <blockquote className="space-y-2">
                 <p className="text-lg">
-                  &ldquo;Serviço Web para live chat NEMLY. Desenvolvido e
-                  sugerido pelo Epix Pivot master, Youtuber lendário &rdquo;
+                  &ldquo;NEMLY: o serviço web de live chat criado por Higor,
+                  inspirado pela genialidade do lendário Epix Pivot Master!
+                  &rdquo;
                 </p>
               </blockquote>
             </div>
@@ -71,7 +72,7 @@ export const RegisterPage = () => {
           </div>
         </div>
       ) : (
-        <div className="container relative flex w-full h-screen flex-col max-w-none items-center justify-center md:grid md: lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <div className="container relative flex w-full px-12 h-screen flex-col max-w-none items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
           <NavLink
             to="/"
             className="absolute right-4 top-4 md:right-8 md:top-8"
@@ -116,6 +117,7 @@ export const RegisterPage = () => {
               </div>
               <UserCreateAccountModal
                 getUserRegistrationStatus={handleUserRegistratiom}
+                className="py-4"
               />
             </div>
           </div>

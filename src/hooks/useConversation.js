@@ -88,4 +88,11 @@ export const useConversation = create((set) => ({
       console.error("Erro ao enviar mensagem:", error);
     }
   },
+  resetApplication: () => {
+    set({
+      selectedFriend: null,
+      chatId: null,
+      messages: [],
+    });
+  },
 }));

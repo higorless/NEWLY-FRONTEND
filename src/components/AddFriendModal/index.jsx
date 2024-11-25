@@ -27,66 +27,74 @@ export const AddFriendModal = ({
   useListenFriendAdded();
 
   return (
-    <Dialog
-      open={isDialogOpen}
-      onOpenChange={(isOpen) => {
-        handleUserDialog(isOpen);
+    <Formik
+      initialValues={{
+        phonenumber: "",
+      }}
+      validationSchema={addFriendSchema}
+      validateOnBlur={false}
+      validateOnChange={false}
+      validateOnMount={false}
+      onSubmit={async (values, { setSubmitting, resetForm }) => {
+        try {
+          setSubmitting(true);
+
+          const { success, message } = await addFriend(values.phonenumber);
+
+          if (!success) {
+            toast({
+              title: "Erro",
+              description: message,
+            });
+            return;
+          }
+
+          toast({
+            title: "Parabéns",
+            description: message,
+          });
+
+          resetForm();
+          handleUserDialog(false); // Fecha o modal somente no sucesso
+        } catch (err) {
+          console.error("Erro ao adicionar amigo:", err);
+        } finally {
+          setSubmitting(false);
+        }
       }}
     >
-      <DialogContent className="sm:max-w-[425px]" autoFocus={false}>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{caption}</DialogDescription>
-        </DialogHeader>
-        <Formik
-          initialValues={{
-            phonenumber: "",
-          }}
-          validationSchema={addFriendSchema} // Aplica a validação com yup
-          onSubmit={async (values, { setSubmitting, resetForm }) => {
-            try {
-              setSubmitting(true);
-
-              const { success, message } = await addFriend(values.phonenumber);
-
-              if (!success) {
-                toast({
-                  title: "Erro",
-                  description: message,
-                });
-                return;
-              }
-
-              toast({
-                title: "Parabéns",
-                description: message,
-              });
-
+      {({
+        values,
+        errors,
+        touched,
+        handleBlur,
+        handleSubmit,
+        setFieldValue,
+        resetForm,
+        isSubmitting,
+      }) => (
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
               resetForm();
-              handleUserDialog(false); // Fecha o modal somente no sucesso
-            } catch (err) {
-              console.error("Erro ao adicionar amigo:", err);
-            } finally {
-              setSubmitting(false);
             }
+            handleUserDialog(isOpen);
           }}
+          className="rounded"
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            isSubmitting,
-          }) => (
+          <DialogContent className="sm:max-w-[425px]" autoFocus={false}>
+            <DialogHeader>
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription>{caption}</DialogDescription>
+            </DialogHeader>
             <form
               onSubmit={handleSubmit}
               id="addFriendForm"
-              className="grid gap-2 py-4"
+              className="grid gap-4 py-4"
             >
-              <div className="grid grid-cols-[60px_1fr] items-center gap-2">
-                <Label htmlFor="phonenumber" className="text-left">
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="phonenumber" className="text-left mb-2">
                   Telefone
                 </Label>
                 <InputMask
@@ -107,7 +115,7 @@ export const AddFriendModal = ({
                   )}
                 </InputMask>
                 {errors.phonenumber && touched.phonenumber && (
-                  <span className="text-xs text-red-500 col-span-2">
+                  <span className="text-xs text-red-500">
                     {errors.phonenumber}
                   </span>
                 )}
@@ -123,9 +131,9 @@ export const AddFriendModal = ({
                 </Button>
               </DialogFooter>
             </form>
-          )}
-        </Formik>
-      </DialogContent>
-    </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
+    </Formik>
   );
 };

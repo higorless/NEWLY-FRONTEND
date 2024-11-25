@@ -33,14 +33,7 @@ export const useUserSession = create((set) => ({
       };
     }
   },
-  updateProfile: async (
-    username,
-    phonenumber,
-    password,
-    bio,
-    avatar,
-    setUser
-  ) => {
+  updateProfile: async (username, phonenumber, password, bio, setUser) => {
     try {
       const token = localStorage.getItem("@nemly:token");
       const user = JSON.parse(localStorage.getItem("@nemly:user"));
@@ -53,7 +46,7 @@ export const useUserSession = create((set) => ({
         throw new Error("Dados do usuário ausentes no localStorage");
       }
 
-      const updatableFields = { username, phonenumber, password, bio, avatar };
+      const updatableFields = { username, phonenumber, password, bio };
 
       const updatedUser = Object.keys(updatableFields).reduce((acc, key) => {
         acc[key] =

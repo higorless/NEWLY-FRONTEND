@@ -18,6 +18,9 @@ export const UserValidateAccountModal = ({ ...props }) => {
           password: "",
         }}
         validationSchema={validateAccountSchema}
+        validateOnBlur={false} // Desativa validação ao desfocar
+        validateOnChange={false} // Desativa validação ao alterar os campos
+        validateOnMount={false} // Desativa validação inicial
         onSubmit={(values, { setSubmitting }) => {
           setTimeout(() => {
             userAutentication(values.phonenumber, values.password);
@@ -33,65 +36,63 @@ export const UserValidateAccountModal = ({ ...props }) => {
           handleBlur,
           handleSubmit,
           isSubmitting,
-          setFieldValue, // Adicionado aqui para corrigir o problema do InputMask
+          setFieldValue,
         }) => (
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-2">
-              <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="phonenumber">
-                  Número de Telefone
-                </Label>
-                <InputMask
-                  mask="(99) 99999-9999"
-                  value={values.phonenumber}
-                  onChange={(e) => setFieldValue("phonenumber", e.target.value)}
-                  onBlur={(e) => handleBlur(e)}
-                  disabled={isSubmitting}
-                >
-                  {(inputProps) => (
-                    <Input
-                      {...inputProps}
-                      id="phonenumber"
-                      name="phonenumber"
-                      placeholder="(00) 00000-0000"
-                      autoCapitalize="none"
-                    />
-                  )}
-                </InputMask>
-                <span className="text-xs text-muted-foreground">
-                  {errors.phonenumber &&
-                    touched.phonenumber &&
-                    errors.phonenumber}
-                </span>
-              </div>
-
-              <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="password">
-                  Sua Senha
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  name="password"
-                  placeholder="Digite sua senha"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  autoCapitalize="none"
-                  disabled={isSubmitting}
-                />
-                <span className="text-xs text-muted-foreground">
-                  {errors.password && touched.password && errors.password}
-                </span>
-              </div>
-
-              <Button disabled={isSubmitting} type="submit">
-                {isSubmitting && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="phonenumber" className="text-left mb-2">
+                Número de Telefone
+              </Label>
+              <InputMask
+                mask="(99) 99999-9999"
+                value={values.phonenumber}
+                onChange={(e) => setFieldValue("phonenumber", e.target.value)}
+                onBlur={handleBlur}
+                disabled={isSubmitting}
+              >
+                {(inputProps) => (
+                  <Input
+                    {...inputProps}
+                    id="phonenumber"
+                    name="phonenumber"
+                    placeholder="(00) 00000-0000"
+                  />
                 )}
-                Faça seu Login
-              </Button>
+              </InputMask>
+              {errors.phonenumber && touched.phonenumber && (
+                <span className="text-xs self-start text-red-500">
+                  {errors.phonenumber}
+                </span>
+              )}
             </div>
+
+            {/* Senha */}
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="password" className="text-left mb-2">
+                Sua Senha
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Digite sua senha"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={isSubmitting}
+              />
+              {errors.password && touched.password && (
+                <span className="text-xs text-red-500 self-start">
+                  {errors.password}
+                </span>
+              )}
+            </div>
+            <Button disabled={isSubmitting} type="submit" className="w-full">
+              {isSubmitting && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Faça seu Login
+            </Button>
           </form>
         )}
       </Formik>

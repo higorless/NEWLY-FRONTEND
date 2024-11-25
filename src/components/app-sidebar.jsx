@@ -1,17 +1,7 @@
 import * as React from "react";
-import {
-  ArchiveX,
-  Command,
-  File,
-  Inbox,
-  Send,
-  Trash2,
-  Contact,
-  UserRoundPlus,
-} from "lucide-react";
+import { Command, Contact, UserRoundPlus } from "lucide-react";
 
 import { NavUser } from "@/components/nav-user";
-import { Label } from "@/components/ui/label";
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAutenticate } from "../hooks/auth.js";
 import { useUserSession } from "../hooks/user-service.js";
@@ -53,10 +42,10 @@ export function AppSidebar({ ...props }) {
   const [searchItem, setSearchItem] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { setOpen } = useSidebar();
   const { logout, user } = useAutenticate();
   const { getFriendlist, friends } = useUserSession();
-  const { fetchMessages, setSelectedFriend } = useConversation();
+  const { fetchMessages, setSelectedFriend, resetApplication } =
+    useConversation();
 
   const filteredFriends = searchItem
     ? friends?.filter((friend) =>
@@ -90,12 +79,7 @@ export function AppSidebar({ ...props }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                asChild
-                className="md:h-8 md:p-0"
-                onClick={() => setIsDialogOpen(true)}
-              >
+              <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
                 <a href="#">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                     <Command className="size-4" />
@@ -154,28 +138,60 @@ export function AppSidebar({ ...props }) {
                 />
               </SidebarMenu>
             </SidebarGroupContent>
+            {/* Lista de Amigos no Mobile */}
+            <div className="block md:hidden overflow-y-auto max-h-[350px] mt-4 border-t pt-2">
+              {filteredFriends.length > 0 ? (
+                filteredFriends.map((friend) => (
+                  <a
+                    href="#"
+                    key={friend?._id}
+                    className="flex flex-col items-start gap-2 border-b p-2 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleUserSelectChat(friend);
+                    }}
+                  >
+                    <div className="flex w-full flex-wrap gap-2 flex-col max-w-[300px] items-start">
+                      <span className="text-sm font-medium">
+                        {friend?.username}
+                      </span>
+                      <p className="line-clamp-2 text-xs">
+                        {friend?.bio || "Sem descrição"}
+                      </p>
+                    </div>
+                  </a>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground text-center">
+                  Nenhum chat encontrado
+                </p>
+              )}
+            </div>
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={user} logout={logout} />
+          <NavUser
+            user={user}
+            logout={logout}
+            resetApplication={resetApplication}
+          />
         </SidebarFooter>
       </Sidebar>
-      <Sidebar collapsible="none" className="hidden flex-1 md:flex">
+      {/* Segunda Sidebar - Desktop */}
+      <Sidebar collapsible="none" className="hidden md:flex flex-1">
         <SidebarHeader className="gap-3.5 border-b p-4">
           <div className="flex w-full items-center justify-between">
-            <div className="text-base font-medium text-foreground">
-              {activeItem.title}
-            </div>
+            <div className="text-base font-medium text-foreground">Chats</div>
           </div>
           <SidebarInput
             onChange={(e) => setSearchItem(e.target.value)}
-            placeholder="Digite e pesquise..."
+            placeholder="Pesquisar chats..."
           />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {Array.isArray(filteredFriends) && filteredFriends.length > 0 ? (
+              {filteredFriends.length > 0 ? (
                 filteredFriends.map((friend) => (
                   <a
                     href="#"
@@ -190,14 +206,16 @@ export function AppSidebar({ ...props }) {
                       <span className="text-sm font-medium">
                         {friend?.username}
                       </span>
-                      <p className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
+                      <p className="line-clamp-2 w-[260px] text-xs">
                         {friend?.bio}
                       </p>
                     </div>
                   </a>
                 ))
               ) : (
-                <p>Algum erro ocorroreu no seu socket de amigos</p>
+                <p className="text-muted-foreground text-center">
+                  Nenhum chat encontrado
+                </p>
               )}
             </SidebarGroupContent>
           </SidebarGroup>

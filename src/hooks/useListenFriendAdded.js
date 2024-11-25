@@ -8,7 +8,6 @@ export const useListenFriendAdded = () => {
 
   useEffect(() => {
     socket?.on("friendAdded", (newFriend) => {
-      console.log(newFriend);
       setFriends([...friends, newFriend]);
       getFriendlist();
     });

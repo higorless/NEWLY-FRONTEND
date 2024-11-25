@@ -7,54 +7,69 @@ import { Formik } from "formik";
 import { createAccountSchema } from "./validateSchema.js";
 import { useAutenticate } from "../../hooks/auth.js";
 import InputMask from "react-input-mask";
+import { useState } from "react";
 
 export const UserCreateAccountModal = ({
   getUserRegistrationStatus,
   ...props
 }) => {
   const { userCreateAccount } = useAutenticate();
+  const [accountCreated, setAccountCreated] = useState(false);
 
   const handleUserRegistrationStatus = (status) => {
+    setAccountCreated(status);
     getUserRegistrationStatus(status);
   };
 
   return (
-    <div className="grid gap-6" {...props}>
-      <Formik
-        initialValues={{
-          username: "",
-          phonenumber: "",
-          password: "",
-          bio: "",
-        }}
-        validationSchema={createAccountSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            userCreateAccount(
-              values.phonenumber,
-              values.password,
-              values.username,
-              values.bio
-            );
-            handleUserRegistrationStatus(true);
-            setSubmitting(false);
-          }, 1000);
-        }}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-          setFieldValue,
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-2">
+    <div
+      className={`grid gap-6 ${
+        accountCreated ? "min-h-[200px]" : "min-h-[400px]"
+      }`}
+      {...props}
+    >
+      {!accountCreated ? (
+        <Formik
+          initialValues={{
+            username: "",
+            phonenumber: "",
+            password: "",
+            bio: "",
+          }}
+          validationSchema={createAccountSchema}
+          onSubmit={async (values, { setSubmitting, resetForm }) => {
+            try {
+              setSubmitting(true);
+
+              await userCreateAccount(
+                values.phonenumber,
+                values.password,
+                values.username,
+                values.bio
+              );
+
+              handleUserRegistrationStatus(true);
+              resetForm();
+            } catch (err) {
+              console.error("Erro ao criar conta:", err);
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            isSubmitting,
+            setFieldValue,
+          }) => (
+            <form onSubmit={handleSubmit} className="grid gap-3">
               <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="username">
+                <Label htmlFor="username" className="text-left mb-1">
                   Seu nome
                 </Label>
                 <Input
@@ -68,12 +83,14 @@ export const UserCreateAccountModal = ({
                   autoCapitalize="none"
                   disabled={isSubmitting}
                 />
-                <span className="text-xs text-muted-foreground">
-                  {errors.username && touched.username && errors.username}
-                </span>
+                {errors.username && touched.username && (
+                  <span className="text-xs text-red-500">
+                    {errors.username}
+                  </span>
+                )}
               </div>
               <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="phonenumber">
+                <Label htmlFor="phonenumber" className="text-left mb-1">
                   Número de Telefone
                 </Label>
                 <InputMask
@@ -93,14 +110,14 @@ export const UserCreateAccountModal = ({
                     />
                   )}
                 </InputMask>
-                <span className="text-xs text-muted-foreground">
-                  {errors.phonenumber &&
-                    touched.phonenumber &&
-                    errors.phonenumber}
-                </span>
+                {errors.phonenumber && touched.phonenumber && (
+                  <span className="text-xs text-red-500">
+                    {errors.phonenumber}
+                  </span>
+                )}
               </div>
               <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="password">
+                <Label htmlFor="password" className="text-left mb-1">
                   Sua Senha
                 </Label>
                 <Input
@@ -114,12 +131,14 @@ export const UserCreateAccountModal = ({
                   autoCapitalize="none"
                   disabled={isSubmitting}
                 />
-                <span className="text-xs text-muted-foreground">
-                  {errors.password && touched.password && errors.password}
-                </span>
+                {errors.password && touched.password && (
+                  <span className="text-xs text-red-500">
+                    {errors.password}
+                  </span>
+                )}
               </div>
               <div className="grid gap-1">
-                <Label htmlFor="bio" className="text-sm">
+                <Label htmlFor="bio" className="text-left mb-1">
                   Bio
                 </Label>
                 <Textarea
@@ -131,9 +150,9 @@ export const UserCreateAccountModal = ({
                   onBlur={handleBlur}
                   disabled={isSubmitting}
                 />
-                <span className="text-xs text-muted-foreground">
-                  {errors.bio && touched.bio && errors.bio}
-                </span>
+                {errors.bio && touched.bio && (
+                  <span className="text-xs text-red-500">{errors.bio}</span>
+                )}
               </div>
               <Button disabled={isSubmitting} type="submit">
                 {isSubmitting && (
@@ -141,10 +160,17 @@ export const UserCreateAccountModal = ({
                 )}
                 Registre-se com o número
               </Button>
-            </div>
-          </form>
-        )}
-      </Formik>
+            </form>
+          )}
+        </Formik>
+      ) : (
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-lg font-semibold">Conta criada com sucesso!</h2>
+          <p className="text-sm text-muted-foreground">
+            Agora você pode acessar o aplicativo.
+          </p>
+        </div>
+      )}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />

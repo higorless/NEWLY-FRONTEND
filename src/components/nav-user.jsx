@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import { EditProfileModal } from "../components/EditProfileModal";
 
-export function NavUser({ user, logout }) {
+export function NavUser({ user, logout, resetApplication }) {
   const { isMobile } = useSidebar();
 
   return (
@@ -71,6 +71,7 @@ export function NavUser({ user, logout }) {
             <DropdownMenuItem
               onClick={() => {
                 logout();
+                resetApplication();
               }}
             >
               <LogOut />

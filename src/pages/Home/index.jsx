@@ -19,17 +19,15 @@ export function Home() {
   const [conversationMessages, setConversationMessages] = useState([]);
   const { selectedFriend, sendMessage, messages } = useConversation();
   const { user } = useAutenticate();
-  const messagesEndRef = useRef(null); // Ref para o scroll
+  const messagesEndRef = useRef(null);
   useListenMessages();
 
-  // Atualiza o scroll sempre que mensagens forem atualizadas
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [conversationMessages]);
 
-  // Filtra mensagens relacionadas ao amigo selecionado
   useEffect(() => {
     const friendMessages = messages.filter(
       (message) =>
@@ -88,7 +86,7 @@ export function Home() {
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} /> {/* Ref para scroll */}
         </div>
         <Formik
           initialValues={{
