@@ -8,12 +8,14 @@ import { createAccountSchema } from "./validateSchema.js";
 import { useAutenticate } from "../../hooks/useAutenticate.js";
 import InputMask from "react-input-mask";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const UserCreateAccountModal = ({
   getUserRegistrationStatus,
   ...props
 }) => {
   const { userCreateAccount } = useAutenticate();
+  const { toast } = useToast();
   const [accountCreated, setAccountCreated] = useState(false);
 
   const handleUserRegistrationStatus = (status) => {
@@ -38,23 +40,26 @@ export const UserCreateAccountModal = ({
           }}
           validationSchema={createAccountSchema}
           onSubmit={async (values, { setSubmitting, resetForm }) => {
-            try {
-              setSubmitting(true);
+            setSubmitting(true);
+            const { message, success } = await userCreateAccount(
+              values.phonenumber,
+              values.password,
+              values.username,
+              values.bio
+            );
 
-              await userCreateAccount(
-                values.phonenumber,
-                values.password,
-                values.username,
-                values.bio
-              );
-
-              handleUserRegistrationStatus(true);
-              resetForm();
-            } catch (err) {
-              console.error("Erro ao criar conta:", err);
-            } finally {
-              setSubmitting(false);
+            if (!success) {
+              toast({
+                title: "Erro ao criar conta",
+                description: message,
+                status: "error",
+              });
+              return setSubmitting(false);
             }
+
+            handleUserRegistrationStatus(true);
+            resetForm();
+            setSubmitting(false);
           }}
         >
           {({

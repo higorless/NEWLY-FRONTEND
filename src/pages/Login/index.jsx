@@ -26,7 +26,7 @@ export const LoginPage = () => {
             <blockquote className="space-y-2">
               <p className="text-lg">
                 &ldquo;NEMLY: o serviço web de live chat criado por Higor,
-                inspirado pelo lendário Epix Pivot Master! &rdquo;
+                inspirado por: Epix Pivot Master e José Jhuvis! &rdquo;
               </p>
             </blockquote>
           </div>

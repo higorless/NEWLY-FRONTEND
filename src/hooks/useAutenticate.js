@@ -57,8 +57,9 @@ export const useAutenticate = create((set) => ({
     } catch (err) {
       console.log(err);
       return {
-        success: true,
-        message: "Something went wrong trying to create the user",
+        success: false,
+        message:
+          "Algo de errado ocorreu com a criação do seu usuário, tente novamente",
       };
     }
   },
