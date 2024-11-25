@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -11,33 +12,31 @@ import { Formik } from "formik";
 import { Icons } from "../../components/Icons.jsx";
 import { useConversation } from "../../hooks/useConversation.js";
 import { useAutenticate } from "../../hooks/auth.js";
-import { useRef, useEffect } from "react";
 import { useListenMessages } from "../../hooks/useListenMessages";
 import { MessageCircle } from "lucide-react";
-import { useState } from "react";
 
 export function Home() {
   const [conversationMessages, setConversationMessages] = useState([]);
-  const [showAnimate, setShowAnimate] = useState(false);
   const { selectedFriend, sendMessage, messages } = useConversation();
   const { user } = useAutenticate();
+  const messagesEndRef = useRef(null); // Ref para o scroll
   useListenMessages();
-  const messagesEndRef = useRef(null);
 
+  // Atualiza o scroll sempre que mensagens forem atualizadas
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [conversationMessages]);
 
+  // Filtra mensagens relacionadas ao amigo selecionado
   useEffect(() => {
-    messages.map((message) => {
-      if (Object.values(message).includes(selectedFriend._id)) {
-        return setConversationMessages((state) => [...state, message]);
-      }
-    });
-
-    return () => setConversationMessages([]);
+    const friendMessages = messages.filter(
+      (message) =>
+        message.messageSender === selectedFriend?._id ||
+        message.messageReceiver === selectedFriend?._id
+    );
+    setConversationMessages(friendMessages);
   }, [messages, selectedFriend]);
 
   return (
@@ -56,7 +55,7 @@ export function Home() {
           )}
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 overflow-y-auto">
-          {messages.length !== 0 ? (
+          {conversationMessages.length > 0 ? (
             conversationMessages.map((message, index) => (
               <div key={index} className="flex flex-col gap-2 justify-end">
                 <div
@@ -84,15 +83,12 @@ export function Home() {
               <div className="flex flex-col items-center gap-1">
                 <MessageCircle className="text-zinc-400" />
                 <strong className="text-zinc-400 font-light">
-                  Selecinoe um Chat ou envie uma mensagem
+                  Selecione um Chat ou envie uma mensagem
                 </strong>
               </div>
             </div>
           )}
-          <div
-            ref={messagesEndRef}
-            className="h-[4px] absolute bottom-0 z-100"
-          />
+          <div ref={messagesEndRef} />
         </div>
         <Formik
           initialValues={{
@@ -106,7 +102,6 @@ export function Home() {
             }
 
             try {
-              setShowAnimate(true);
               await sendMessage(selectedFriend._id, values.message);
               resetForm();
             } catch (error) {
@@ -125,7 +120,7 @@ export function Home() {
           }) => (
             <form
               onSubmit={handleSubmit}
-              className="sticky bottom-0 flex shrink-0 items-center gap-2 border-b bg-background p-4"
+              className="sticky bottom-0 flex shrink-0 items-center gap-2 bg-background p-4"
             >
               <Textarea
                 className="resize-none h-2 min-h-[42px] focus:outline-none focus:ring-0"
@@ -136,6 +131,12 @@ export function Home() {
                 value={values.message}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
                 disabled={!selectedFriend}
                 required
               />
