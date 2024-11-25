@@ -13,8 +13,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAutenticate } from "../hooks/auth.js";
-import { useUserSession } from "../hooks/user-service.js";
+import { useAutenticate } from "../hooks/useAutenticate.js";
+import { useUserSession } from "../hooks/useUserSession.js";
 import { useEffect, useState } from "react";
 import { useConversation } from "../hooks/useConversation.js";
 import { AddFriendModal } from "../components/AddFriendModal";

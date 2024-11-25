@@ -13,7 +13,7 @@ import { Formik } from "formik";
 import { useToast } from "@/hooks/use-toast";
 import InputMask from "react-input-mask";
 import { addFriendSchema } from "./validateSchema"; // Importar o esquema de validação
-import { useUserSession } from "../../hooks/user-service";
+import { useUserSession } from "../../hooks/useUserSession";
 import { useListenFriendAdded } from "../../hooks/useListenFriendAdded";
 
 export const AddFriendModal = ({
@@ -55,7 +55,7 @@ export const AddFriendModal = ({
           });
 
           resetForm();
-          handleUserDialog(false); // Fecha o modal somente no sucesso
+          handleUserDialog(false);
         } catch (err) {
           console.error("Erro ao adicionar amigo:", err);
         } finally {

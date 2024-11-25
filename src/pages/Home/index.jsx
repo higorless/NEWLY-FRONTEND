@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button.jsx";
 import { Formik } from "formik";
 import { Icons } from "../../components/Icons.jsx";
 import { useConversation } from "../../hooks/useConversation.js";
-import { useAutenticate } from "../../hooks/auth.js";
+import { useAutenticate } from "../../hooks/useAutenticate.js";
 import { useListenMessages } from "../../hooks/useListenMessages";
 import { MessageCircle } from "lucide-react";
 
@@ -132,7 +132,8 @@ export function Home() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey && !isSubmitting) {
                     e.preventDefault();
-                    handleSubmit();
+
+                    if (values.message) handleSubmit();
                   }
                 }}
                 disabled={!selectedFriend}

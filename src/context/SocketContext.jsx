@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { useAutenticate } from "../hooks/auth.js";
+import { useAutenticate } from "../hooks/useAutenticate.js";
 import io from "socket.io-client";
 
 export const useSocketContext = () => {
@@ -10,7 +10,6 @@ export const SocketContext = createContext();
 
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const [teste, setTest] = useState(null);
   const { user } = useAutenticate();
 
   useEffect(() => {

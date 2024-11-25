@@ -79,7 +79,7 @@ export function NavUser({ user, logout, resetApplication }) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <EditProfileModal
-              caption="Digite suas informações para alterar os dados"
+              caption="Fique tranquilo! Se você não preencher algum campo, seus dados originais serão mantidos intactos"
               title="Edite sua conta!"
               childTitle="Editar meu perfil"
             />

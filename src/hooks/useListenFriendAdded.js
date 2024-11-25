@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext.jsx";
-import { useUserSession } from "../hooks/user-service.js";
+import { useUserSession } from "../hooks/useUserSession.js";
 
 export const useListenFriendAdded = () => {
   const { socket } = useSocketContext();

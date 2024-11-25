@@ -4,7 +4,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Formik } from "formik";
 import { validateAccountSchema } from "./validateSchema.js";
-import { useAutenticate } from "../../hooks/auth.js";
+import { useAutenticate } from "../../hooks/useAutenticate.js";
 import InputMask from "react-input-mask";
 
 export const UserValidateAccountModal = ({ ...props }) => {

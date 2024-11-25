@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { api } from "../services/api.js";
-import { useConversation } from "./useConversation.js";
 
 export const useAutenticate = create((set) => ({
   user: JSON.parse(localStorage.getItem("@nemly:user")) || {},

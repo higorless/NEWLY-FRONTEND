@@ -5,7 +5,7 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Formik } from "formik";
 import { createAccountSchema } from "./validateSchema.js";
-import { useAutenticate } from "../../hooks/auth.js";
+import { useAutenticate } from "../../hooks/useAutenticate.js";
 import InputMask from "react-input-mask";
 import { useState } from "react";
 

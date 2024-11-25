@@ -17,8 +17,8 @@ import { SquarePen } from "lucide-react";
 import InputMask from "react-input-mask";
 import { editProfileSchema } from "./validateSchema";
 
-import { useUserSession } from "../../hooks/user-service";
-import { useAutenticate } from "../../hooks/auth.js";
+import { useUserSession } from "../../hooks/useUserSession";
+import { useAutenticate } from "../../hooks/useAutenticate.js";
 import { useState } from "react";
 
 export const EditProfileModal = ({ caption, title, childTitle }) => {
@@ -134,8 +134,6 @@ export const EditProfileModal = ({ caption, title, childTitle }) => {
                     </span>
                   )}
                 </div>
-
-                {/* Telefone */}
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="phonenumber" className="text-left">
                     Telefone
