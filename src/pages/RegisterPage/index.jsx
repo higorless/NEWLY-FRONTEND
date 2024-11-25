@@ -2,6 +2,8 @@ import { UserCreateAccountModal } from "../../components/UserCreateAccountModal"
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Button } from "../../components/ui/button";
+import nemlyLogo from "../../images/nemly-logo.svg";
+import nemlyLogoWhite from "../../images/nemly-logo-branco.svg";
 
 export const RegisterPage = () => {
   const [isUserRegistered, setIsUserRegistered] = useState(false);
@@ -22,19 +24,14 @@ export const RegisterPage = () => {
           <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
             <div className="absolute inset-0 bg-zinc-900" />
             <div className="relative z-20 flex items-center text-lg font-medium">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2 h-6 w-6"
-              >
-                <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-              </svg>
-              Acme Inc
+              <div className="relative z-20 flex items-center text-lg font-medium">
+                <img
+                  src={nemlyLogo}
+                  alt="Logotipo do aplicativo nemly"
+                  className="mr-2 h-6 w-6 bg-white rounded p-1"
+                />
+              </div>
+              Nemly
             </div>
             <div className="relative z-20 mt-auto">
               <blockquote className="space-y-2">
@@ -80,27 +77,22 @@ export const RegisterPage = () => {
             Login
           </NavLink>
           <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-            <div className="absolute inset-0 bg-zinc-900" />
+            <div className="absolute inset-0 bg-zinc-900 overflow-auto" />
             <div className="relative z-20 flex items-center text-lg font-medium">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2 h-6 w-6"
-              >
-                <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-              </svg>
-              Acme Inc
+              <div className="relative z-20 flex items-center text-lg font-medium">
+                <img
+                  src={nemlyLogo}
+                  alt="Logotipo do aplicativo nemly"
+                  className="mr-2 h-6 w-6 bg-white rounded p-1"
+                />
+              </div>
+              Nemly
             </div>
             <div className="relative z-20 mt-auto">
               <blockquote className="space-y-2">
                 <p className="text-lg">
-                  &ldquo;Serviço Web para live chat NEMLY. Desenvolvido e
-                  sugerido pelo Epix Pivot master, Youtuber lendário &rdquo;
+                  &ldquo;NEMLY: o serviço web de live chat criado por Higor,
+                  inspirado pelo lendário Epix Pivot Master! &rdquo;
                 </p>
               </blockquote>
             </div>

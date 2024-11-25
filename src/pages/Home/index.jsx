@@ -86,7 +86,7 @@ export function Home() {
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} /> {/* Ref para scroll */}
+          <div ref={messagesEndRef} />
         </div>
         <Formik
           initialValues={{
@@ -130,7 +130,7 @@ export function Home() {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.shiftKey && !isSubmitting) {
                     e.preventDefault();
                     handleSubmit();
                   }

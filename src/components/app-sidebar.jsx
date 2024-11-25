@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Command, Contact, UserRoundPlus } from "lucide-react";
 
 import { NavUser } from "@/components/nav-user";
@@ -19,6 +18,7 @@ import { useUserSession } from "../hooks/user-service.js";
 import { useEffect, useState } from "react";
 import { useConversation } from "../hooks/useConversation.js";
 import { AddFriendModal } from "../components/AddFriendModal";
+import nemlyLogo from "../images/nemly-logo-branco.svg";
 
 const data = {
   navMain: [
@@ -44,7 +44,7 @@ export function AppSidebar({ ...props }) {
 
   const { logout, user } = useAutenticate();
   const { getFriendlist, friends } = useUserSession();
-  const { fetchMessages, setSelectedFriend, resetApplication } =
+  const { fetchMessages, setSelectedFriend, selectedFriend, resetApplication } =
     useConversation();
 
   const filteredFriends = searchItem
@@ -79,17 +79,15 @@ export function AppSidebar({ ...props }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
-                <a href="#">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Command className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Acme Inc</span>
-                    <span className="truncate text-xs">Enterprise</span>
-                  </div>
-                </a>
-              </SidebarMenuButton>
+              <a href="/">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <img
+                    src={nemlyLogo}
+                    alt="Logotipo do aplicativo nemly"
+                    className="h-6 w-6 p-1"
+                  />
+                </div>
+              </a>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -138,14 +136,21 @@ export function AppSidebar({ ...props }) {
                 />
               </SidebarMenu>
             </SidebarGroupContent>
-            {/* Lista de Amigos no Mobile */}
-            <div className="block md:hidden overflow-y-auto max-h-[350px] mt-4 border-t pt-2">
+            <div
+              id="mobile-chat-list"
+              className="block md:hidden overflow-y-auto max-h-[350px] mt-4 border-t pt-2"
+            >
               {filteredFriends.length > 0 ? (
                 filteredFriends.map((friend) => (
                   <a
                     href="#"
                     key={friend?._id}
-                    className="flex flex-col items-start gap-2 border-b p-2 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    className={`flex flex-col items-start gap-2 border-b p-2 text-sm leading-tight last:border-b-0 
+                      ${
+                        selectedFriend?._id === friend._id
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      }`}
                     onClick={(e) => {
                       e.preventDefault();
                       handleUserSelectChat(friend);
@@ -162,9 +167,11 @@ export function AppSidebar({ ...props }) {
                   </a>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground text-center">
-                  Nenhum chat encontrado
-                </p>
+                <div className="flex w-full flex-wrap gap-2 flex-col max-w-[300px] items-start mt-4">
+                  <p className="text-sm text-muted-foreground text-center">
+                    Nenhum chat encontrado, adicione um amigo!
+                  </p>
+                </div>
               )}
             </div>
           </SidebarGroup>
@@ -177,8 +184,11 @@ export function AppSidebar({ ...props }) {
           />
         </SidebarFooter>
       </Sidebar>
-      {/* Segunda Sidebar - Desktop */}
-      <Sidebar collapsible="none" className="hidden md:flex flex-1">
+      <Sidebar
+        collapsible="none"
+        className="hidden md:flex flex-1"
+        id="desktop-sidebar"
+      >
         <SidebarHeader className="gap-3.5 border-b p-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-base font-medium text-foreground">Chats</div>
@@ -196,7 +206,12 @@ export function AppSidebar({ ...props }) {
                   <a
                     href="#"
                     key={friend?._id}
-                    className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    className={`flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 
+                      ${
+                        selectedFriend?._id === friend._id
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      }`}
                     onClick={(e) => {
                       e.preventDefault();
                       handleUserSelectChat(friend);
@@ -213,9 +228,11 @@ export function AppSidebar({ ...props }) {
                   </a>
                 ))
               ) : (
-                <p className="text-muted-foreground text-center">
-                  Nenhum chat encontrado
-                </p>
+                <div className="flex w-full flex-wrap gap-2 flex-col max-w-[300px] items-start mt-4 px-4">
+                  <p className="text-muted-foreground text-center">
+                    Nenhum chat encontrado, adicione um amigo!
+                  </p>
+                </div>
               )}
             </SidebarGroupContent>
           </SidebarGroup>
